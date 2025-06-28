@@ -211,10 +211,6 @@ package strategy {
     + sort(items: List<T>): List<T>
   }
 
-  class SortCarsByAvailability {
-    + sort(items: List<Car>): List<Car>
-  }
-
   class SortRentalsByStartDate {
     + sort(items: List<Rental>): List<Rental>
   }
@@ -293,6 +289,28 @@ package utils {
   FileManager --> RentalFileManager
 }
 
+package builder {
+  class RentalBuilder {
+    - customer: Customer
+    - car: Car
+    - startDate: LocalDate
+    - endDate: LocalDate
+    - kasko: boolean
+    - roadside: boolean
+    - costStrategy: PricingStrategy
+    - price: double
+    - status: RentalStatus
+
+    + RentalBuilder(customer: Customer, car: Car, startDate: LocalDate, endDate: LocalDate)
+    + kasko(kasko: boolean): RentalBuilder
+    + roadside(roadside: boolean): RentalBuilder
+    + costStrategy(strategy: PricingStrategy): RentalBuilder
+    + price(price: double): RentalBuilder
+    + status(status: RentalStatus): RentalBuilder
+    + build(): Rental
+  }
+}
+
 ' === RELAZIONI ===
 
 Main --> MainGUI
@@ -340,9 +358,6 @@ CarLeaf --> Car
 CarGroup ..> Car : contains indirectly
 CarComponent ..> Car : handles logic on cars
 
-SortCarsByAvailability --> SortStrategy
-SortCarsByAvailability --> Car
-
 SortRentalsByStartDate --> SortStrategy
 SortRentalsByStartDate --> Rental
 
@@ -375,5 +390,13 @@ Car --> CarFuel
 BasicRentalStrategy --> PricingStrategy
 PremiumRentalStrategy --> PricingStrategy
 LuxuryRentalStrategy --> PricingStrategy
+
+' === RELAZIONI BUILDER ===
+RentalBuilder --> Rental : build()
+RentalBuilder --> Customer
+RentalBuilder --> Car
+RentalBuilder --> PricingStrategy
+RentalBuilder --> RentalStatus
+RentalBuilder --> LocalDate
 
 @enduml

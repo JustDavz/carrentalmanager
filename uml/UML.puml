@@ -397,6 +397,5 @@ RentalBuilder --> Customer
 RentalBuilder --> Car
 RentalBuilder --> PricingStrategy
 RentalBuilder --> RentalStatus
-RentalBuilder --> LocalDate
 
 @enduml

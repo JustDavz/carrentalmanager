@@ -1,0 +1,379 @@
+@startuml CarRentalManager
+
+' === PACKAGES ===
+
+package app {
+  class Main {
+    + main(args: String[]): void
+  }
+}
+
+package gui {
+  class MainGUI {
+    - customerForm: CustomerForm
+    - carForm: CarForm
+    - rentalForm: RentalForm
+    - rentalManagerForm: RentalManagerForm
+    + MainGUI()
+    + initializeUI(): void
+    + setVisible(boolean): void
+  }
+
+  class CustomerForm {
+    + CustomerForm(List<Customer>)
+    + showForm(): void
+  }
+
+  class CarForm {
+    + CarForm(List<Car>)
+    + showForm(): void
+  }
+
+  class RentalForm {
+    + RentalForm(List<Rental>, List<Customer>, List<Car>)
+    + showForm(): void
+  }
+
+  class RentalManagerForm {
+    + RentalManagerForm(List<Rental>, List<Customer>, List<Car>)
+    + showForm(): void
+    + closeRental(): void
+  }
+
+  class CustomerBrowser {
+    + CustomerBrowser(CustomerCollection)
+  }
+
+  class CarBrowser {
+    + CarBrowser(CarCollection)
+  }
+
+  class CarGroupBrowser {
+    + CarGroupBrowser(CarGroup)
+  }
+
+  class RentalBrowser {
+    + RentalBrowser(RentalCollection)
+  }
+}
+
+package model {
+  class Car {
+    - plateNumber: String
+    - brand: String
+    - model: String
+    - category: String
+    - fuelType: CarFuel
+    - dailyPrice: double
+    - available: boolean
+    + getPlateNumber(): String
+    + getBrand(): String
+    + getModel(): String
+    + getCategory(): String
+    + getFuelType(): CarFuel
+    + getDailyPrice(): double
+    + isAvailable(): boolean
+    + setAvailable(boolean): void
+  }
+
+  class Customer {
+    - id: String
+    - name: String
+    - surname: String
+    - email: String
+    - phone: String
+    + getId(): String
+    + getName(): String
+    + getSurname(): String
+    + getEmail(): String
+    + getPhone(): String
+  }
+
+  class Rental {
+    - customer: Customer
+    - car: Car
+    - startDate: LocalDate
+    - endDate: LocalDate
+    - price: double
+    - status: RentalStatus
+    - strategy: PricingStrategy
+    + getCustomer(): Customer
+    + getCar(): Car
+    + getStartDate(): LocalDate
+    + getEndDate(): LocalDate
+    + getPrice(): double
+    + setPrice(double): void
+    + getStatus(): RentalStatus
+    + setStatus(RentalStatus): void
+    + calculateTotalPrice(): double
+    + notifyRentalStarted(): void
+    + notifyRentalClosed(): void
+  }
+
+  enum CarFuel {
+    + BENZINA
+    + DIESEL
+    + ELETTRICO
+    + HYBRID
+    + GAS
+  }
+
+  enum RentalStatus {
+    + APERTO
+    + CHIUSO
+  }
+}
+
+package factory {
+  class CarFactory {
+    + createCar(...): Car
+  }
+  class CustomerFactory {
+    + createCustomer(...): Customer
+  }
+  class RentalFactory {
+    + createRental(...): Rental
+  }
+}
+
+package composite {
+  abstract class CarComponent {
+    + addChild(component: CarComponent): void
+    + removeChild(component: CarComponent): void
+    + countAvailableCars(): int
+    + printDetails(): void
+  }
+
+  class CarGroup {
+    - nameGroup: String
+    - children: List<CarComponent>
+    + CarGroup(nameGroup: String)
+    + addChild(component: CarComponent): void
+    + removeChild(component: CarComponent): void
+    + countAvailableCars(): int
+    + printDetails(): void
+    + getName(): String
+    + getChildren(): List<CarComponent>
+  }
+
+  class CarLeaf {
+    - car: Car
+    + printDetails(): void
+    + countAvailableCars(): int
+  }
+}
+
+package iterator {
+  class CarCollection {
+    - cars: List<Car>
+    + iterator(): Iterator<Car>
+  }
+  class CustomerCollection {
+    - customers: List<Customer>
+    + iterator(): Iterator<Customer>
+  }
+  class RentalCollection {
+    - rentals: List<Rental>
+    + iterator(): Iterator<Rental>
+  }
+}
+
+package observer {
+  interface RentalObserver {
+    + onRentalStarted(rental: Rental): void
+    + onRentalClosed(rental: Rental): void
+  }
+
+  class RentalLogger {
+    + onRentalStarted(rental: Rental): void
+    + onRentalClosed(rental: Rental): void
+  }
+}
+
+package strategy {
+  interface PricingStrategy {
+    + calculatePrice(days: long, dailyRate: double): double
+  }
+
+  class BasicRentalStrategy {
+    + calculatePrice(days: long, dailyRate: double): double
+  }
+
+  class PremiumRentalStrategy {
+    + calculatePrice(days: long, dailyRate: double): double
+  }
+
+  class LuxuryRentalStrategy {
+    + calculatePrice(days: long, dailyRate: double): double
+  }
+
+  interface SortStrategy<T> {
+    + sort(items: List<T>): List<T>
+  }
+
+  class SortCarsByAvailability {
+    + sort(items: List<Car>): List<Car>
+  }
+
+  class SortRentalsByStartDate {
+    + sort(items: List<Rental>): List<Rental>
+  }
+
+  class SortRentalsByEndDateAsc {
+    + sort(items: List<Rental>): List<Rental>
+  }
+
+  class SortRentalsByEndDateDesc {
+    + sort(items: List<Rental>): List<Rental>
+  }
+
+  class SortRentalsByPrice {
+    + sort(items: List<Rental>): List<Rental>
+  }
+
+  class SortRentalsByCustomerName {
+    + sort(items: List<Rental>): List<Rental>
+  }
+
+  class SortRentalsByStatus {
+    + sort(items: List<Rental>): List<Rental>
+  }
+}
+
+package utils {
+  class FileManager <<Singleton>> {
+    + getInstance(): FileManager
+    + initializeFiles(): void
+    + saveAllDataAsync(List<Customer>, List<Car>, List<Rental>): void
+    + saveCustomer(Customer): void
+    + saveCustomers(List<Customer>): void
+    + loadCustomers(List<Customer>): void
+    + setCustomerFile(String): void
+    + saveCar(Car): void
+    + saveCars(List<Car>): void
+    + loadCars(List<Car>): void
+    + updateCar(Car): void
+    + setCarFile(String): void
+    + saveRental(Rental): void
+    + saveAllRentals(List<Rental>): void
+    + loadRentals(List<Rental>, List<Car>): void
+    + setRentalFile(String): void
+  }
+
+  class CarFileManager <<Singleton>> {
+    - carFilePath: String
+    + getInstance(): CarFileManager
+    + setFilePath(path: String): void
+    + saveCar(car: Car): void
+    + saveCars(cars: List<Car>): void
+    + loadCars(carList: List<Car>): void
+    + updateCar(car: Car): void
+  }
+
+  class CustomerFileManager <<Singleton>> {
+    - customerFilePath: String
+    + getInstance(): CustomerFileManager
+    + setFilePath(path: String): void
+    + saveCustomer(customer: Customer): void
+    + saveCustomers(customerList: List<Customer>): void
+    + loadCustomers(customerList: List<Customer>): void
+  }
+
+  class RentalFileManager <<Singleton>> {
+    - rentalFilePath: String
+    + getInstance(): RentalFileManager
+    + setFilePath(path: String): void
+    + saveRental(rental: Rental): void
+    + saveAllRentals(rentals: List<Rental>): void
+    + loadRentals(rentalList: List<Rental>, carList: List<Car>): void
+  }
+
+  FileManager --> CarFileManager
+  FileManager --> CustomerFileManager
+  FileManager --> RentalFileManager
+}
+
+' === RELAZIONI ===
+
+Main --> MainGUI
+Main --> FileManager
+Main --> Customer
+Main --> Car
+Main --> Rental
+
+FileManager --> CarFileManager
+FileManager --> CustomerFileManager
+FileManager --> RentalFileManager
+
+MainGUI --> CustomerForm
+MainGUI --> CarForm
+MainGUI --> RentalForm
+MainGUI --> RentalManagerForm
+MainGUI --> CustomerBrowser
+MainGUI --> CarBrowser
+MainGUI --> CarGroupBrowser
+MainGUI --> RentalBrowser
+
+RentalManagerForm --> RentalForm
+RentalManagerForm --> CustomerForm
+RentalManagerForm --> CarForm
+
+CustomerForm --> CustomerFactory
+CustomerFactory --> Customer
+
+CarForm --> CarFactory
+CarFactory --> Car
+
+RentalForm --> RentalFactory
+RentalFactory --> Rental
+Rental --> PricingStrategy
+Rental --> RentalStatus
+Rental --> Car
+Rental --> Customer
+
+Rental --> RentalObserver
+RentalLogger --> RentalObserver
+
+CarGroup -up-|> CarComponent
+CarLeaf -up-|> CarComponent
+CarLeaf --> Car
+CarGroup ..> Car : contains indirectly
+CarComponent ..> Car : handles logic on cars
+
+SortCarsByAvailability --> SortStrategy
+SortCarsByAvailability --> Car
+
+SortRentalsByStartDate --> SortStrategy
+SortRentalsByStartDate --> Rental
+
+SortRentalsByEndDateAsc --> SortStrategy
+SortRentalsByEndDateAsc --> Rental
+
+SortRentalsByEndDateDesc --> SortStrategy
+SortRentalsByEndDateDesc --> Rental
+
+SortRentalsByPrice --> SortStrategy
+SortRentalsByPrice --> Rental
+
+SortRentalsByCustomerName --> SortStrategy
+SortRentalsByCustomerName --> Rental
+
+SortRentalsByStatus --> SortStrategy
+SortRentalsByStatus --> Rental
+
+CarCollection --> Car
+CustomerCollection --> Customer
+RentalCollection --> Rental
+
+CustomerBrowser --> CustomerCollection
+CarBrowser --> CarCollection
+RentalBrowser --> RentalCollection
+CarGroupBrowser --> CarGroup
+
+Car --> CarFuel
+
+BasicRentalStrategy --> PricingStrategy
+PremiumRentalStrategy --> PricingStrategy
+LuxuryRentalStrategy --> PricingStrategy
+
+@enduml

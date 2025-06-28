@@ -90,10 +90,11 @@ In alternativa, esegui `Main.java` da IDE.
 I file `customers.csv`, `cars.csv`, `rentals.csv` verranno creati automaticamente.
 
 ### Architettura dei pacchetti
-
+```
 src/
 ├── main/java/com/carrentalmanager/...     # Codice principale
 └── test/java/com/carrentalmanager/...     # Test unitari con JUnit
+```
 
 ### Architettura dettagliata
 

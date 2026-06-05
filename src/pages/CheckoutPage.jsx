@@ -255,7 +255,7 @@ function CheckoutPage() {
       if (!cardInfo.expiry) {
         newErrors.cardExpiry = 'Scadenza obbligatoria'
       } else if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(cardInfo.expiry)) {
-        // formato MM/YY con mese valido (01-33)
+        // formato MM/YY con mese valido
         newErrors.cardExpiry = 'Formato MM/YY non valido'
       }
 

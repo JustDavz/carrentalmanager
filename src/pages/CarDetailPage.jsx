@@ -101,13 +101,21 @@ function CarDetailPage() {
   )
 
   /*
-    Intervalli di date già occupate, nel formato richiesto dal DatePicker e verranno passati a excludeDateIntervals per
-    barrare quei giorni sul calendario quando non è disponibile l'auto. 
+      Intervalli di date già occupate nel formato richiesto dal DatePicker e verranno passati a excludeDateIntervals per
+      barrare i giorni sul calendario quando l'auto non è disponibile.
+      Vengono barrati tutti i giorni della prenotazione dal ritiro alla riconsegna inclusi quindi l'auto torna disponibile
+      dal giorno successivo.
+      Le date sono normalizzate a mezzanotte locale per evitare errori nel confronto e nella visualizzazione dei giorni sul calendario.
   */
-  const excludedIntervals = activeBookings.map((booking) => ({
-    start: new Date(booking.startDate),
-    end: new Date(booking.endDate),
-  }))
+  const excludedIntervals = activeBookings.map((booking) => {
+    const [sy, sm, sd] = booking.startDate.split('-').map(Number)
+    const start = new Date(sy, sm - 1, sd, 0, 0, 0, 0)
+
+    const [ey, em, ed] = booking.endDate.split('-').map(Number)
+    const end = new Date(ey, em - 1, ed, 0, 0, 0, 0)
+
+    return { start, end }
+  })
 
   // Converte un oggetto Date nella stringa 'YYYY-MM-DD' usata per salvare e confrontare le date
   const formatDate = (date) => {
